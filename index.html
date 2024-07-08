@@ -10,6 +10,9 @@
 
     <link rel="stylesheet" type="text/css" href="vendors/bootstrap.min.css">
     <script type="text/javascript" src="vendors/purify.min.js"></script>
+    <!--
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'nonce-2726c7f26c';">
+    -->
 </head>
 
 <body style="background-image: url(img/united-squares.png); color: #ffffff;">
@@ -93,7 +96,7 @@
         userName = "applicant";
 
         if (userParam !== null) {
-            userName = userParam;
+            userName = DOMPurify.sanitize(userParam);
         }
 
         document.getElementById("welcome-text").innerHTML = "<h1>How do you do, " + userName + "?</h1>";
@@ -106,7 +109,7 @@
         input.addEventListener("input", updateValue);
 
         function updateValue(e) {
-            log.innerHTML = e.target.value;
+            log.innerHTML = DOMPurify.sanitize(e.target.value);
         }
 
         //  XSS vulnerability #3
@@ -118,13 +121,13 @@
         showButton.addEventListener("click", showHTML);
 
         function showHTML() {
-            htmlOutput.innerHTML = htmlInput.value;
+            htmlOutput.innerHTML = DOMPurify.sanitize(htmlInput.value);
         }
 
         //  XSS vulnerability #4
 
         const redir = params.get("goto");
-        if (redir !== null && redir !== "null") {
+        if (redir !== null && redir !== "null" && !redir.startsWith("javascript:")) {
             document.location = redir;
         }
 
